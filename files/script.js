@@ -53,13 +53,13 @@ let dialouge = {
         "Kate look here, hast thour beheld a fresher gentelwoman?",
         "Such war of white and red within her cheeks!",
         "What stars do spangle heaven with such beauty as those two eyes become that heavenly face?",
-        "Fair lovely maid, once more good day to thee. Sweet Kate, embrace her for her beauty’s sake.",
+        "Fair lovely maid, once more good day to thee. Sweet Kate, embrace her for her beauty’s sake",
         "Young budding virgin, fair and fresh and sweet, whither away, or where is thy abode?",
         "Happy the parents of so fair a child!",
         "Happier the man whom favorable stars allots thee for his lovely bedfellow",
-        "Why, how now, Kate? I hope thou art not mad! This is a man —old, wrinkled, faded, withered— and not a maiden, as thou sayst he is.",
+        "Why, how now, Kate? I hope thou art not mad! This is a man —old, wrinkled, faded, withered— and not a maiden, as thou sayst he is",
         "Pardon, old father, my mistaking eyes that have been so bedazzled with the sun that everything I look on seemeth green",
-        "Now I perceive thou art a reverend fatherPardon, I pray thee, for my mad mistaking."
+        "Now I perceive thou art a reverend father. Pardon, I pray thee, for my mad mistaking"
     ]
 }
 
