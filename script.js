@@ -11,6 +11,8 @@ const rect = canvas.getBoundingClientRect();
 let mouseX;
 let mouseY;
 let t = 0; //sine wave timer
+let deathTimer = 0;
+let deaths = 0;
 
 
 resizeCanvas();
@@ -297,8 +299,13 @@ function drawText (txt, x, y, color = "black", px = "30px Arial"){
 }
 
 const update = (delta) => {
-    player.update(delta);
-    if (player.y > ground.y + ground.height) resetPlayer();
+    if (deathTimer == 0) player.update(delta);
+    if (player.y > ground.y + ground.height) {
+        deathTimer += delta;
+        if (deathTimer >= 0.5) {
+                resetPlayer();
+            }
+    } else deathTimer = 0;
 }
 
 const drawFrame = (delta) => {
