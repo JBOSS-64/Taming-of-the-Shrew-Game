@@ -14,6 +14,7 @@ let t = 0; //sine wave timer
 let deathTimer = 0;
 let deaths = 0;
 let debugMode = false;
+let screen = "start";
 
 let dialouge = {
     level1: [
@@ -34,7 +35,9 @@ resizeCanvas();
 
 let shrewLogo;
 let startButton;
+let levelButton;
 let startBtn;
+let levelBtn;
 
 
 //Image Loading
@@ -49,24 +52,29 @@ function loadImage(src) {
 
 Promise.all([
     loadImage("images/shrewLogo.png"),
-    loadImage("images/startButton.png")
+    loadImage("images/startButton.png"),
+    loadImage("images/levelButton.png")
 ]).then(images => {
     console.log("All images loaded.");
     shrewLogo = images[0];
     startButton = images[1];
+    levelButton = images[2];
     startBtn = new Button(0, 0, startButton, 3);
+    levelBtn = new Button(0, 0, levelButton, 3);
     startGame();
 }).catch(err => {
     console.error(err);
 });
 
 class Ground {
-    constructor(x, y, width, height, color){
+    constructor(x, y, width, height, color, solid, flicker){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.solid = solid || true;
+        this.flicker = flicker || false;
     }
 
     draw(){
@@ -111,8 +119,30 @@ class Player {
 
         } else {
             this.yVelocity += gravity * delta;
-            let speedMult = level == 2 ? .67 : 1;
-            let jumpMult = level == 2 ? .9 : 1;
+            let speedMult;
+            let jumpMult;
+            switch (level) {
+                case 2:
+                    speedMult = .67;
+                    jumpMult = .9;
+                    break;
+                case 3:
+                    speedMult = 0.6;
+                    jumpMult = .85;
+                    break;
+                case 4:
+                    speedMult = .55;
+                    jumpMult = .8;
+                    break;
+                case 5:
+                    speedMult = .5;
+                    jumpMult = .75;
+                    break;
+                default:
+                    speedMult = 1;
+                    jumpMult = 1;
+            }
+            
 
             let dx = 0;
             if (keys["ArrowLeft"] || keys["KeyA"]) dx -= this.moveSpeed * speedMult * delta;
@@ -121,7 +151,7 @@ class Player {
             this.x += dx;
 
             for (let p of levels[level].platformsList) {
-                if (this.isColliding(p)) {
+                if (this.isColliding(p) && p.solid) {
                     if (dx > 0) this.x = p.x - this.width;
                     if (dx < 0) this.x = p.x + p.width;
                 }
@@ -135,7 +165,7 @@ class Player {
             }
 
             for (let p of levels[level].platformsList) {
-                if (this.isColliding(p)) {
+                if (this.isColliding(p) && p.solid) {
                     if (this.yVelocity > 0) {
                         this.y = p.y - this.height;
                         this.yVelocity = 0;
@@ -202,15 +232,17 @@ class NPC {
 
 
 class Platform {
-    constructor(x, y, width, height, color){
+    constructor(x, y, width, height, color, solid, flicker){
         this.x = x;
         this.y = ground.y - y;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.solid = solid || true;
+        this.flicker = flicker || false;
     }
 
-    draw(){
+    draw(delta){
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
@@ -244,17 +276,29 @@ let Platform2 = new Platform(600, 50, 500, 20, "red");
 let platforms = [ground];
 let level1 = [
     ground,
-    new Platform(600, 50, 200, 20, "red"), new Platform (880, 120, 150, 20, "red"), new Platform (1175, 120, 50, 20, "red"),
-    new Platform (1375, 150, 50, 20, "red"), new Platform (1520, 235, 125, 20, "red"), new Platform (1775, 275, 75, 20, "red"),
+    new Platform(600, 50, 200, 20, "red"),
+    new Platform (880, 120, 150, 20, "red"),
+    new Platform (1175, 120, 50, 20, "red"),
+    new Platform (1375, 150, 50, 20, "red"),
+    new Platform (1520, 235, 125, 20, "red"),
+    new Platform (1775, 275, 75, 20, "red"),
     new Platform (1950, 350, 500, 20, "gold")
 ];
 let level2 = [
     ground,
-    new Platform(600, 50, 200, 20, "red"), new Platform (880, 120, 150, 20, "red"), new Platform (1175, 120, 50, 20, "red"),
-    new Platform (1375, 150, 50, 20, "red"), new Platform (1520, 200, 125, 20, "red"), new Platform (1775, 245, 75, 20, "red"),
+    new Platform(600, 50, 200, 20, "red"),
+    new Platform (880, 120, 150, 20, "red"),
+    new Platform (1175, 120, 50, 20, "red"),
+    new Platform (1375, 150, 50, 20, "red"),
+    new Platform (1520, 200, 125, 20, "red"),
+    new Platform (1775, 245, 75, 20, "red"),
     new Platform (1950, 275, 500, 20, "gold")
 ];
-let level3 = [ground, Platform2];
+let level3 = [
+    ground,
+    new Platform(600, 50, 200, 20, "red"),
+    new Platform(900, 70, 200, 20, "red")
+];
 let level4 = [ground, Platform2];
 let level5 = [ground, Platform2];
 let level6 = [ground, Platform2];
@@ -328,24 +372,27 @@ const drawFrame = (delta) => {
         drawTitleScreen(delta);
     } else{
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if(debugMode){
-        drawText("Debug Mode", 50, 50);
-        drawText("Player X: " + Math.floor(player.x), 50, 90);
-        drawText("Player Y: " + Math.floor(player.y), 50, 130);
-        drawText("Flying: " + player.fly, 50, 170)
-        drawText("Controls:", window.innerWidth - 250, 50);
-        drawText("L: Toggle Debug", window.innerWidth - 250, 90);
-        drawText("F: Toggle Flight", window.innerWidth - 250, 130);
-        drawText("B: Previous Level", window.innerWidth - 250, 170);
-        drawText("N: Next Level", window.innerWidth - 250, 210);
-        }
         ctx.save();
         ctx.scale(camera.zoom, camera.zoom);
         ctx.translate(-camera.x, -camera.y);
         player.draw();
         Pertrucio.draw();
-        for (let p of levels[level].platformsList) p.draw();
+        for (let p of levels[level].platformsList) p.draw(delta);
         ctx.restore();
+        if(debugMode){
+            drawText("Debug Mode", 50, 50);
+            drawText("Player X: " + Math.floor(player.x), 50, 90);
+            drawText("Player Y: " + Math.floor(player.y), 50, 130);
+            drawText("Y Velocity: " + Math.floor(player.yVelocity), 50, 170);
+            drawText("Flying: " + player.fly, 50, 210);
+            drawText("Level: " + level + "/" + (levels.length-1), 50, 250);
+            drawText("Controls:", window.innerWidth - 250, 50);
+            drawText("L: Toggle Debug", window.innerWidth - 250, 90);
+            drawText("F: Toggle Flight", window.innerWidth - 250, 130);
+            drawText("Shift: Speed up", window.innerWidth - 250, 170);
+            drawText("B: Previous Level", window.innerWidth - 250, 210);
+            drawText("N: Next Level", window.innerWidth - 250, 250);
+        }
     }
 }
 
@@ -366,21 +413,34 @@ function drawTitleScreen(delta){
     ctx.fillStyle = "grey";
     ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
     let scale = 0.6;
-    let btnScale;
+    let startBtnScale;
+    let levelBtnScale;
     if(isTouchingButton(startBtn)) {
-        btnScale = 5.5;
+        startBtnScale = 5.5;
     }
     else {
-        btnScale = 5;
+        startBtnScale = 5;
     }
-    startBtn.scaleBtn(btnScale);
+    if(isTouchingButton(levelBtn)) {
+        levelBtnScale = 5.5;
+    }
+    else {
+        levelBtnScale = 5;
+    }
+    startBtn.scaleBtn(startBtnScale);
+    levelBtn.scaleBtn(levelBtnScale);
     const amplitude = 10;
     const offsetY = (center.y-shrewLogo.height/(2/scale))-(window.innerHeight/6);
     const y = offsetY + Math.sin(t) * amplitude;
     ctx.drawImage(shrewLogo, center.x-shrewLogo.width/(2/scale), y, shrewLogo.width*scale, shrewLogo.height*scale)
-    startBtn.x = center.x - startButton.width/(2/btnScale)
-    startBtn.y = center.y - startButton.height/(2/btnScale) + shrewLogo.height*scale/2;
+
+    startBtn.x = (center.x - startButton.width/(2/startBtnScale)) - window.innerWidth/4
+    startBtn.y = center.y - startButton.height/(2/startBtnScale) + shrewLogo.height*scale/2;
+
+    levelBtn.x = (levelBtn.x = center.x - startButton.width/(2/levelBtnScale)) + window.innerWidth/4
+    levelBtn.y = center.y - startButton.height/(2/levelBtnScale) + shrewLogo.height*scale/2;
     startBtn.draw();
+    levelBtn.draw();
 }
 
 function resetPlayer(){
@@ -396,6 +456,9 @@ canvas.addEventListener('mousedown', () =>{
     if(isTouchingButton(startBtn)){
         loadLevel(1);
     }
+    if(isTouchingButton(levelBtn)){
+        screen = "level"
+    }
 });
 
 window.addEventListener("keydown", e => {
@@ -406,7 +469,10 @@ window.addEventListener("keydown", e => {
         debugMode = !debugMode;
         player.fly = false;
     }
-    if(e.code == "KeyF" && !keys[e.code] && debugMode) player.fly = !player.fly
+    if(e.code == "KeyF" && !keys[e.code] && debugMode) {
+        player.fly = !player.fly
+        player.yVelocity = 0;
+    }
     keys[e.code] = true;
 });
 
