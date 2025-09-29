@@ -95,6 +95,7 @@ class Player {
         } else {
             this.yVelocity += gravity * delta;
             let speedMult = level == 2 ? .67 : 1;
+            let jumpMult = level == 2 ? .9 : 1;
 
             let dx = 0;
             if (keys["ArrowLeft"] || keys["KeyA"]) dx -= this.moveSpeed * speedMult * delta;
@@ -131,9 +132,10 @@ class Player {
             }
 
             if (this.x < 0) this.x=0;
+            if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) nextLevel();
 
             if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
-                this.yVelocity = -this.jumpHeight;
+                this.yVelocity = -this.jumpHeight*jumpMult;
                 this.ct = 0;
             }
         }
@@ -229,7 +231,12 @@ let level1 = [
     new Platform (1375, 150, 50, 20, "red"), new Platform (1520, 235, 125, 20, "red"), new Platform (1775, 275, 75, 20, "red"),
     new Platform (1950, 350, 500, 20, "gold")
 ];
-let level2 = level1;
+let level2 = [
+    ground,
+    new Platform(600, 50, 200, 20, "red"), new Platform (880, 120, 150, 20, "red"), new Platform (1175, 120, 50, 20, "red"),
+    new Platform (1375, 150, 50, 20, "red"), new Platform (1520, 200, 125, 20, "red"), new Platform (1775, 245, 75, 20, "red"),
+    new Platform (1950, 275, 500, 20, "gold")
+];
 let level3 = [ground, Platform2];
 let level4 = [ground, Platform2];
 let level5 = [ground, Platform2];
@@ -237,12 +244,12 @@ let level6 = [ground, Platform2];
 
 
 let levels = [
-    {id: 0 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}},
-    {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}},
-    {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}},
-    {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}},
-    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}},
-    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}}
+    {id: 0 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
+    {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}, winPos: {x: 2100, y: 520}},
+    {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
+    {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
+    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
+    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
 ];
 
 let player = new Player(levels[level].startPos.x, levels[level].startPos.y, 20, 40);
