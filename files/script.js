@@ -181,7 +181,6 @@ class Player {
 
             if (this.x < 0) this.x=0;
             if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) nextLevel();
-            if (level == 5 && this.x >= levels[level].winPos.x) nextLevel();
 
             if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
                 this.yVelocity = -this.jumpHeight*jumpMult;
@@ -357,7 +356,14 @@ let level4 = [
     new Platform(2600, 360, 125, 10, "red", false, true),
     new Platform(2675, 0, 600, 10, "gold")
 ];
-let level5 = [ground];
+let level5 = [
+    ground,
+    new Platform(820, 0, 50, 10, "red"),
+    new Platform(940, 0, 50, 10, "red"),
+    new Platform(1060, 0, 50, 10, "red"),
+    new Platform(1180, 0, 50, 10, "red"),
+    new Platform(1300, 0, 300, 10, "gold")
+];
 
 
 let levels = [
@@ -366,7 +372,7 @@ let levels = [
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
     {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 2000, y: 230}, winPos: {x: 1800, y: 245}},
     {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 2900, y: 99999}},
-    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
+    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 1400, y: 99999}}
 ];
 
 let player = new Player(levels[level].startPos.x, levels[level].startPos.y, 20, 40);
