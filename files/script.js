@@ -83,7 +83,7 @@ class Ground {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-let ground = new Ground(0, 900, 930, 100, "green");
+let ground = new Ground(0, 900, 750, 100, "green");
 
 
 class Player {
@@ -181,6 +181,7 @@ class Player {
 
             if (this.x < 0) this.x=0;
             if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) nextLevel();
+            if (level == 5 && this.x >= levels[level].winPos.x) nextLevel();
 
             if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
                 this.yVelocity = -this.jumpHeight*jumpMult;
@@ -339,9 +340,24 @@ let level3 = [
     new Platform(1630, 575, 25, 10, "red"),
     new Platform(1750, 620, 300, 10, "gold")
 ];
-let level4 = [ground, Platform2];
-let level5 = [ground, Platform2];
-let level6 = [ground, Platform2];
+let level4 = [
+    ground, 
+    new Platform(600, 50, 150, 20, "red"),
+    new Platform(800, 75, 100, 20, "red"),
+    new Platform(1000, 90, 100, 20, "red", true, true),
+    new Platform(1150, 110, 100, 20, "red"),
+    new Platform(1270, 150, 75, 20, "red"),
+    new Platform(1320, 180, 75, 20, "red"),
+    new Platform(1500, 200, 75, 20, "red", true, true),
+    new Platform(1675, 240, 125, 10, "red"),
+    new Platform(1820, 280, 125, 10, "red"),
+    new Platform(2000, 300, 125, 10, "red", true, true),
+    new Platform(2220, 330, 125, 10, "red"),
+    new Platform(2420, 360, 125, 10, "red"),
+    new Platform(2600, 360, 125, 10, "red", false, true),
+    new Platform(2675, 0, 600, 10, "gold")
+];
+let level5 = [ground];
 
 
 let levels = [
@@ -349,7 +365,7 @@ let levels = [
     {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}, winPos: {x: 2100, y: 520}},
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
     {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 2000, y: 230}, winPos: {x: 1800, y: 245}},
-    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
+    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 2900, y: 99999}},
     {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
 ];
 
