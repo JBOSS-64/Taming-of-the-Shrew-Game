@@ -13,6 +13,21 @@ let mouseY;
 let t = 0; //sine wave timer
 let deathTimer = 0;
 let deaths = 0;
+let debugMode = false;
+
+let dialouge = {
+    level1: [
+        "Hello Kate",
+        "It is quite unfortunate that you fell off of your horse on the way here",
+        "But now it is time for us to eat",
+        "",
+        "This meat is burnt! We shall eat none of it!",
+        "There will be no eating tonight since these servants cannot prepare a proper meal"
+    ],
+    level2: [
+        ""
+    ]
+}
 
 
 resizeCanvas();
@@ -74,13 +89,13 @@ class Player {
         this.canMoveLeft = true;
         this.canMoveRight = true;
         this.jumpHeight = 600;
-        this.debugMode = false;
+        this.fly = false;
         this.gracePeriod = .075;
         this.ct = 0; //coyote time
     }
 
     update(delta) {
-        if (this.debugMode){
+        if (this.fly){
             let dx = 0;
             let dy = 0;
 
@@ -161,17 +176,17 @@ class Player {
         this.x = x;
         this.y = y;
         this.yVelocity = 0;
-        this.debugMode = false;
     }
 
 }
 
 class NPC {
-    constructor(x, y, width, height){
+    constructor(x, y, width, height, dialougeArray){
         this.x=x;
         this.y=y;
         this.width=width;
-        this.height=height
+        this.height=height;
+        this.dialouge = dialougeArray;
     }
 
     goTo(x, y){
@@ -313,8 +328,17 @@ const drawFrame = (delta) => {
         drawTitleScreen(delta);
     } else{
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawText("Player X: " + Math.floor(player.x), 50, 50);
-        drawText("Player Y: " + Math.floor(player.y), 50, 90);
+        if(debugMode){
+        drawText("Debug Mode", 50, 50);
+        drawText("Player X: " + Math.floor(player.x), 50, 90);
+        drawText("Player Y: " + Math.floor(player.y), 50, 130);
+        drawText("Flying: " + player.fly, 50, 170)
+        drawText("Controls:", window.innerWidth - 250, 50);
+        drawText("L: Toggle Debug", window.innerWidth - 250, 90);
+        drawText("F: Toggle Flight", window.innerWidth - 250, 130);
+        drawText("B: Previous Level", window.innerWidth - 250, 170);
+        drawText("N: Next Level", window.innerWidth - 250, 210);
+        }
         ctx.save();
         ctx.scale(camera.zoom, camera.zoom);
         ctx.translate(-camera.x, -camera.y);
@@ -376,9 +400,13 @@ canvas.addEventListener('mousedown', () =>{
 
 window.addEventListener("keydown", e => {
     if(e.code == "KeyR" && !keys[e.code]) player.reset(levels[level].startPos.x, levels[level].startPos.y)
-    if(e.code == "KeyN" && !keys[e.code]) nextLevel();
-    if(e.code == "KeyB" && !keys[e.code]) prevLevel();
-    if(e.code == "KeyL" && !keys[e.code]) player.debugMode = !player.debugMode;
+    if(e.code == "KeyN" && !keys[e.code] && debugMode) nextLevel();
+    if(e.code == "KeyB" && !keys[e.code] && debugMode) prevLevel();
+    if(e.code == "KeyL" && !keys[e.code]){
+        debugMode = !debugMode;
+        player.fly = false;
+    }
+    if(e.code == "KeyF" && !keys[e.code] && debugMode) player.fly = !player.fly
     keys[e.code] = true;
 });
 
