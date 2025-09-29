@@ -16,9 +16,14 @@ let deaths = 0;
 let debugMode = false;
 let screen = "start";
 let bg = "skyblue"
+let levelEnded = false;
+let currentDialogue = null;
+let dialogueIndex = 0;
+let dialogueActive = false;
 
 let dialouge = {
-    level1: [
+    "level0": [],
+    "level1": [
         "Hello Kate",
         "It is quite unfortunate that you fell off of your horse on the way here",
         "But now it is time for us to eat",
@@ -26,25 +31,25 @@ let dialouge = {
         "This meat is burnt and dry! We shall eat none of it!",
         "We will fast tonight since these rouges cannot prepare a proper meal!"
     ],
-    level2: [
+    "level2": [
         "Your bed is all messed up you cannot sleep here!",
         "You need to fix the pillows and the sheets",
         "You musn't sleep here tonight!"
     ],
-    level3: [
+    "level3": [
         "Alright it is time for us to go to your fathers house for your sister's wedding",
         "I see that it is now 7 o'clock, so we should arrive by dinner",
         "I dare assure you, sir, 'tis almost two, and 'twill be supper time ere you come there",
         "Alright then, we are not leaving until it is what time I say it is"
     ],
-    level4: [
+    "level4": [
         "Good Lord, how bright and goodly shines the moon!",
         "The moon? The sun! It is not moonlight now",
         "I say it is the moon that shines so bright",
         "I know it is the sun that shines so bright",
         "Okay then, I guess we can just go back home if you will not agree"
     ],
-    level5: [
+    "level5": [
         "Kate look here, hast thour beheld a fresher gentelwoman?",
         "Such war of white and red within her cheeks!",
         "What stars do spangle heaven with such beauty as those two eyes become that heavenly face?",
@@ -165,7 +170,7 @@ class Player {
             this.x += dx;
             this.y += dy;
 
-        } else {
+        } else if (!levelEnded) {
             this.yVelocity += gravity * delta;
             let speedMult;
             let jumpMult;
@@ -227,7 +232,7 @@ class Player {
             }
 
             if (this.x < 0) this.x=0;
-            if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) nextLevel();
+            if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
 
             if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
                 this.yVelocity = -this.jumpHeight*jumpMult;
@@ -432,9 +437,13 @@ function resizeCanvas() {
 }
 
 function updateCamera() {
-    const targetX = player.x - (canvas.width / (2 * camera.zoom)) + player.width / 2;
-    const targetY = player.y - (canvas.height / (2 * camera.zoom)) + player.height / 2;
-
+    if (levelEnded) {
+        targetX = 2200 - (canvas.width / (2 * camera.zoom));
+        targetY = 500 - (canvas.height / (2 * camera.zoom));
+    } else {
+        targetX = player.x - (canvas.width / (2 * camera.zoom)) + player.width / 2;
+        targetY = player.y - (canvas.height / (2 * camera.zoom)) + player.height / 2;
+    }
     camera.x += (targetX - camera.x) * 0.1;
     camera.y += (targetY - camera.y) * 0.1;
 
@@ -489,6 +498,7 @@ const drawFrame = (delta) => {
         Pertrucio.draw();
         for (let p of levels[level].platformsList) p.draw(delta);
         ctx.restore();
+        drawDialogue();
         if(debugMode){
             drawText("Debug Mode", 50, 50);
             drawText("Player X: " + Math.floor(player.x), 50, 90);
@@ -558,6 +568,31 @@ function resetPlayer(){
     player.reset(levels[level].startPos.x, levels[level].startPos.y);
 }
 
+function levelEnd(){
+    levelEnded = true;
+    startDialogue("level" + level);
+    //nextLevel();
+}
+
+function startDialogue(levelKey) {
+    currentDialogue = dialouge[levelKey];
+    dialogueIndex = 0;
+    dialogueActive = true;
+}
+
+function drawDialogue() {
+    if (!dialogueActive) return;
+
+    ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+    ctx.fillRect(50, canvas.height - 150, canvas.width - 100, 100);
+
+    ctx.fillStyle = "white";
+    ctx.font = "24px Arial";
+    ctx.fillText(currentDialogue[dialogueIndex], 70, canvas.height - 110);
+}
+
+
+
 canvas.addEventListener('mousemove', (e) => {
     mouseX = e.clientX - rect.left;
     mouseY = e.clientY - rect.top;
@@ -576,6 +611,14 @@ window.addEventListener("keydown", e => {
     if(e.code == "KeyR" && !keys[e.code]) player.reset(levels[level].startPos.x, levels[level].startPos.y)
     if(e.code == "KeyN" && !keys[e.code] && debugMode) nextLevel();
     if(e.code == "KeyB" && !keys[e.code] && debugMode) prevLevel();
+     if (dialogueActive && e.code === "Space") {
+        dialogueIndex++;
+        if (dialogueIndex >= currentDialogue.length) {
+            dialogueActive = false;
+            levelEnded = false;
+            nextLevel();
+        }
+    }
     if(e.code == "KeyL" && !keys[e.code]){
         debugMode = !debugMode;
         player.fly = false;
