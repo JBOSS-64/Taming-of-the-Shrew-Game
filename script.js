@@ -6,14 +6,14 @@ let lastTime;
 let keys = {};
 let center = {x: window.innerWidth/2, y: window.innerHeight/2}
 let camera = {x: 0, y: 0, zoom: 3};
-let level = 0;
+let level = 3;
 const rect = canvas.getBoundingClientRect();
 let mouseX;
 let mouseY;
 let t = 0; //sine wave timer
 let deathTimer = 0;
 let deaths = 0;
-let debugMode = false;
+let debugMode = true;
 let screen = "start";
 
 let dialouge = {
@@ -22,8 +22,8 @@ let dialouge = {
         "It is quite unfortunate that you fell off of your horse on the way here",
         "But now it is time for us to eat",
         "",
-        "This meat is burnt! We shall eat none of it!",
-        "There will be no eating tonight since these servants cannot prepare a proper meal"
+        "This meat is burnt and dry! We shall eat none of it!",
+        "We will fast tonight since these rouges cannot prepare a proper meal!"
     ],
     level2: [
         ""
@@ -67,14 +67,14 @@ Promise.all([
 });
 
 class Ground {
-    constructor(x, y, width, height, color, solid, flicker){
+    constructor(x, y, width, height, color, solid = true, flicker = false){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.color = color;
-        this.solid = solid || true;
-        this.flicker = flicker || false;
+        this.solid = solid
+        this.flicker = flicker;
     }
 
     draw(){
@@ -232,19 +232,45 @@ class NPC {
 
 
 class Platform {
-    constructor(x, y, width, height, color, solid, flicker){
+    constructor(x, y, width, height, color, solid = true, flicker = false){
         this.x = x;
         this.y = ground.y - y;
         this.width = width;
         this.height = height;
         this.color = color;
-        this.solid = solid || true;
-        this.flicker = flicker || false;
+        this.solid = solid;
+        this.flicker = flicker;
+        this.visible = true;
+        this.timer = 0;
+        this.t2 = 0;
     }
 
     draw(delta){
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (this.flicker){
+            if (!this.visible){
+                this.t2 -= delta;
+                if (this.t2 <= 0){
+                    this.t2 =0;
+                    this.visible = true;
+                }
+            }
+            if(this.timer == 0 && this.visible) this.timer = randomNum(0.1, 3);
+            if (this.visible){
+            this.timer -= delta;
+            if (this.timer <= 0){
+                this.timer = 0;
+                this.visible = false;
+                this.t2 = randomNum(0.1, 0.4);
+            }
+        }
+            if(this.visible){
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+            }
+        } else {
+            ctx.fillStyle = this.color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
     }
 }
 
@@ -297,7 +323,20 @@ let level2 = [
 let level3 = [
     ground,
     new Platform(600, 50, 200, 20, "red"),
-    new Platform(900, 70, 200, 20, "red")
+    new Platform(900, 70, 200, 20, "red"),
+    new Platform(1205, 100, 200, 20, "red", true, true),
+    new Platform(1425, 150, 100, 20, "red"),
+    new Platform(1500, 200, 50, 20, "red"),
+    new Platform(1350, 250, 100, 10, "red"),
+    new Platform(1200, 300, 125, 10, "red"),
+    new Platform(975, 360, 150, 10, "red"),
+    new Platform(730, 410, 150, 10, "red", false, true),
+    new Platform(600, 475, 150, 10, "red"),
+    new Platform(1200, 420, 150, 10, "red", true, true),
+    new Platform(1420, 475, 50, 10, "red"),
+    new Platform(1570, 525, 25, 10, "red"),
+    new Platform(1630, 575, 25, 10, "red"),
+    new Platform(1750, 620, 300, 10, "gold")
 ];
 let level4 = [ground, Platform2];
 let level5 = [ground, Platform2];
@@ -308,7 +347,7 @@ let levels = [
     {id: 0 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
     {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}, winPos: {x: 2100, y: 520}},
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
-    {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
+    {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 2000, y: 230}, winPos: {x: 1800, y: 245}},
     {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}},
     {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
 ];
@@ -331,10 +370,7 @@ function updateCamera() {
 
     // clamp
     camera.x = Math.max(0, camera.x);
-    camera.y = Math.min(
-        (ground.y + ground.height / 2) - canvas.height / camera.zoom,
-        camera.y
-    );
+    camera.y = Math.min((ground.y + ground.height / 2) - canvas.height / camera.zoom, camera.y);
 }
 
 
@@ -363,6 +399,8 @@ const update = (delta) => {
         deathTimer += delta;
         if (deathTimer >= 0.5) {
                 resetPlayer();
+                deaths ++;
+                console.log("Deaths: "+ deaths);
             }
     } else deathTimer = 0;
 }
@@ -386,6 +424,7 @@ const drawFrame = (delta) => {
             drawText("Y Velocity: " + Math.floor(player.yVelocity), 50, 170);
             drawText("Flying: " + player.fly, 50, 210);
             drawText("Level: " + level + "/" + (levels.length-1), 50, 250);
+            drawText("Deaths: " + deaths, 50, 290)
             drawText("Controls:", window.innerWidth - 250, 50);
             drawText("L: Toggle Debug", window.innerWidth - 250, 90);
             drawText("F: Toggle Flight", window.innerWidth - 250, 130);
@@ -496,6 +535,10 @@ function prevLevel (){
 function startGame(){
     lastTime = 0;
     requestAnimationFrame(gameLoop);
+}
+
+function randomNum(min, max){
+    return Math.random() * (max - min) + min;
 }
 loadLevel(level);
 window.addEventListener("resize", resizeCanvas);
