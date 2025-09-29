@@ -17,6 +17,7 @@ resizeCanvas();
 
 let shrewLogo;
 let startButton;
+let startBtn;
 
 
 //Image Loading
@@ -36,6 +37,7 @@ Promise.all([
     console.log("All images loaded.");
     shrewLogo = images[0];
     startButton = images[1];
+    startBtn = new Button(0, 0, startButton, 3);
     startGame();
 }).catch(err => {
     console.error(err);
@@ -232,11 +234,6 @@ let level3 = [ground, Platform2];
 let level4 = [ground, Platform2];
 let level5 = [ground, Platform2];
 let level6 = [ground, Platform2];
-
-let startBtn;
-loadImage("images/startButton.png").then(img => {
-    startBtn = new Button(0, 0, startButton, 3);
-});
 
 
 let levels = [
