@@ -6,7 +6,7 @@ let lastTime;
 let keys = {};
 let center = {x: window.innerWidth/2, y: window.innerHeight/2}
 let camera = {x: 0, y: 0, zoom: 3};
-let level = 1;
+let level = 0;
 const rect = canvas.getBoundingClientRect();
 let mouseX;
 let mouseY;
@@ -220,7 +220,7 @@ let Pertrucio = new NPC(0, 0, 25, 50);
 let Platform1 = new Platform(100, 200, 500, 50, "red");
 let Platform2 = new Platform(600, 50, 500, 20, "red");
 
-let platforms = [];
+let platforms = [ground];
 let level1 = [
     ground,
     new Platform(600, 50, 200, 20, "red"), new Platform (880, 120, 150, 20, "red"), new Platform (1175, 120, 50, 20, "red"),
@@ -240,12 +240,12 @@ loadImage("images/startButton.png").then(img => {
 
 
 let levels = [
-    {id: 0 ,platformsList: platforms, startPos: {x: 150, y: 840}},
+    {id: 0 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}},
     {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}},
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}},
-    {id: 3, platformsList: level3, startPos: {x: 150, y: 840}},
-    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}},
-    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}}
+    {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}},
+    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}},
+    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}}
 ];
 
 let player = new Player(levels[level].startPos.x, levels[level].startPos.y, 20, 40);
@@ -274,8 +274,8 @@ function updateCamera() {
 
 
 function loadLevel(levelId){
-    player.reset(levels[levelId].startPos.x, levels[levelId].startPos.y);
     level = levelId;
+    player.reset(levels[level].startPos.x, levels[level].startPos.y);
     Pertrucio.goTo(levels[level].npcPos.x, levels[level].npcPos.y)
     console.log("Level: "+level);
 }
@@ -378,7 +378,7 @@ window.addEventListener("keyup", e => {
 
 function nextLevel (){
     let l = level + 1;
-    if (l>levels.length) l = levels.length
+    if (l>=levels.length) l = levels.length-1
     else loadLevel(l);
 }
 
