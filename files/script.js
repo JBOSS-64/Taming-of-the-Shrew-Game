@@ -5,7 +5,7 @@ const gravity = 2000;
 let lastTime;
 let keys = {};
 let center = {x: window.innerWidth/2, y: window.innerHeight/2}
-let camera = {x: 0, y: 0, zoom: 3};
+let camera = {x: 0, y: 0, zoom: 2.5};
 let level = 0;
 const rect = canvas.getBoundingClientRect();
 let mouseX;
