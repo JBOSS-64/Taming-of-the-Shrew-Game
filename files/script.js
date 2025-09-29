@@ -13,8 +13,9 @@ let mouseY;
 let t = 0; //sine wave timer
 let deathTimer = 0;
 let deaths = 0;
-let debugMode = true;
+let debugMode = false;
 let screen = "start";
+let bg = "skyblue"
 
 let dialouge = {
     level1: [
@@ -135,8 +136,8 @@ class Player {
                     jumpMult = .8;
                     break;
                 case 5:
-                    speedMult = .5;
-                    jumpMult = .75;
+                    speedMult = .35;
+                    jumpMult = .65;
                     break;
                 default:
                     speedMult = 1;
@@ -410,6 +411,8 @@ const drawFrame = (delta) => {
         drawTitleScreen(delta);
     } else{
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = bg;
+        ctx.fillRect(0,0, canvas.width, canvas.height);
         ctx.save();
         ctx.scale(camera.zoom, camera.zoom);
         ctx.translate(-camera.x, -camera.y);
