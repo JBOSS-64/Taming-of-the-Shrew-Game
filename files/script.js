@@ -27,16 +27,34 @@ let dialouge = {
         "We will fast tonight since these rouges cannot prepare a proper meal!"
     ],
     level2: [
-        ""
+        "Your bed is all messed up you cannot sleep here!",
+        "You need to fix the pillows and the sheets",
+        "You musn't sleep here tonight!"
     ],
     level3: [
-        ""
+        "Alright it is time for us to go to your fathers house for your sister's wedding",
+        "I see that it is now 7 o'clock, so we should arrive by dinner",
+        "I dare assure you, sir, 'tis almost two, and 'twill be supper time ere you come there",
+        "Alright then, we are not leaving until it is what time I say it is"
     ],
     level4: [
-        ""
+        "Good Lord, how bright and goodly shines the moon!",
+        "The moon? The sun! It is not moonlight now",
+        "I say it is the moon that shines so bright",
+        "I know it is the sun that shines so bright",
+        "Okay then, I guess we can just go back home if you will not agree"
     ],
     level5: [
-        ""
+        "Kate look here, hast thour beheld a fresher gentelwoman?",
+        "Such war of white and red within her cheeks!",
+        "What stars do spangle heaven with such beauty as those two eyes become that heavenly face?",
+        "Fair lovely maid, once more good day to thee. Sweet Kate, embrace her for her beauty’s sake.",
+        "Young budding virgin, fair and fresh and sweet, whither away, or where is thy abode?",
+        "Happy the parents of so fair a child!",
+        "Happier the man whom favorable stars allots thee for his lovely bedfellow",
+        "Why, how now, Kate? I hope thou art not mad! This is a man —old, wrinkled, faded, withered— and not a maiden, as thou sayst he is.",
+        "Pardon, old father, my mistaking eyes that have been so bedazzled with the sun that everything I look on seemeth green",
+        "Now I perceive thou art a reverend fatherPardon, I pray thee, for my mad mistaking."
     ]
 }
 
@@ -48,6 +66,9 @@ let startButton;
 let levelButton;
 let startBtn;
 let levelBtn;
+let katherine;
+let petrucioImg;
+let vincentio;
 
 
 //Image Loading
@@ -63,12 +84,29 @@ function loadImage(src) {
 Promise.all([
     loadImage("images/shrewLogo.png"),
     loadImage("images/startButton.png"),
-    loadImage("images/levelButton.png")
+    loadImage("images/levelButton.png"),
+    loadImage("images/katherine/katherineL0.png"),
+    loadImage("images/katherine/katherineL1.png"),
+    loadImage("images/katherine/katherineLJ.png"),
+    loadImage("images/katherine/katherineR0.png"),
+    loadImage("images/katherine/katherineR1.png"),
+    loadImage("images/katherine/katherineRJ.png"),
+    loadImage("images/petruchio.png"),
+    loadImage("images/vincentio.png")
 ]).then(images => {
     console.log("All images loaded.");
     shrewLogo = images[0];
     startButton = images[1];
     levelButton = images[2];
+    let katherineL0 = images[3];
+    let katherineL1 = images[4];
+    let katherineLJ = images[5];
+    let katherineR0 = images[6];
+    let katherineR1 = images[7];
+    let katherineRJ = images[8];
+    petrucioImg = images[9];
+    vincentio = images[10];
+    katherine = {left: {0: katherineL0, 1: katherineL1, jump: katherineLJ}, right: {0: katherineR0, 1: katherineR1, jump: katherineRJ}};
     startBtn = new Button(0, 0, startButton, 3);
     levelBtn = new Button(0, 0, levelButton, 3);
     startGame();
