@@ -437,13 +437,20 @@ let level4 = [
     new Platform(2600, 360, 125, 10, "red", false, true),
     new Platform(2675, 0, 600, 10, "gold")
 ];
+let offset = 120;
 let level5 = [
     ground,
     new Platform(820, 0, 50, 10, "red"),
-    new Platform(940, 0, 50, 10, "red"),
-    new Platform(1060, 0, 50, 10, "red"),
-    new Platform(1180, 0, 50, 10, "red"),
-    new Platform(1300, 0, 300, 10, "gold")
+    new Platform(820+offset, 0, 50, 10, "red"),
+    new Platform(820+offset*2, 0, 50, 10, "red"),
+    new Platform(820+offset*3, 0, 50, 10, "red"),
+    new Platform(820+offset*4, 0, 50, 10, "red"),
+    new Platform(820+offset*5, 0, 50, 10, "red"),
+    new Platform(820+offset*6, 0, 50, 10, "red"),
+    new Platform(820+offset*7, 0, 50, 10, "red"),
+    new Platform(820+offset*8, 0, 50, 10, "red"),
+    new Platform(820+offset*9, 0, 50, 10, "red"),
+    new Platform(820+offset*10, 0, 300, 10, "gold")
 ];
 
 
@@ -453,7 +460,7 @@ let levels = [
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
     {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 2000, y: 230}, winPos: {x: 1800, y: 245}},
     {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 3000, y: 850}, winPos: {x: 2900, y: 99999}},
-    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 1480, y: 850}, winPos: {x: 1400, y: 99999}},
+    {id: 5, platformsList: level5, startPos: {x: 600, y: 840}, npcPos: {x: 2200, y: 850}, winPos: {x: 2100, y: 99999}},
     {id: 6 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
 ];
 
@@ -486,7 +493,7 @@ function updateCamera() {
                 targetY = 860 - (canvas.height / (2 * camera.zoom));
                 break;
             case 5:
-                targetX = 1450 - (canvas.width / (2 * camera.zoom));
+                targetX = 2150 - (canvas.width / (2 * camera.zoom));
                 targetY = 860 - (canvas.height / (2 * camera.zoom));
                 break;
             default:
