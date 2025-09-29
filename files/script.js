@@ -20,6 +20,7 @@ let levelEnded = false;
 let currentDialogue = null;
 let dialogueIndex = 0;
 let dialogueActive = false;
+let gameWon = false;
 
 let dialouge = {
     "level0": [],
@@ -250,9 +251,38 @@ class Player {
         );
     }
 
-    draw(){
-        ctx.fillStyle = "blue";
-        ctx.fillRect(this.x, this.y, this.width, this.height)
+    draw() {
+        ctx.imageSmoothingEnabled = false;
+        if (keys["ArrowLeft"] || keys["KeyA"]) {
+            this.facing = "left";
+        } else if (keys["ArrowRight"] || keys["KeyD"]) {
+            this.facing = "right";
+        }
+        let direction = this.facing || "right";
+
+
+        let sprite;
+        let yOffset = 0;
+
+        if (!this.grounded) {
+            sprite = katherine[direction].jump;
+            yOffset = 4;
+        } else if (keys["ArrowLeft"] || keys["ArrowRight"] || keys["KeyA"] || keys["KeyD"]) {
+            let frame = Math.floor(Date.now() / 200) % 2;
+            sprite = katherine[direction][frame];
+        } else {
+
+            sprite = katherine[direction][0];
+        }
+
+
+        ctx.drawImage(
+            sprite,
+            this.x - 8,
+            this.y + yOffset,
+            this.width + 16,
+            this.height + 4
+        );
     }
 
     reset (x, y){
@@ -278,8 +308,7 @@ class NPC {
     }
 
     draw(){
-        ctx.fillStyle = "red";
-        ctx.fillRect(this.x, this.y, this.width, this.height)
+        ctx.drawImage(petrucioImg, this.x-8, this.y, this.width+16, this.height)
     }
 }
 
@@ -423,8 +452,9 @@ let levels = [
     {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}, winPos: {x: 2100, y: 520}},
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
     {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 2000, y: 230}, winPos: {x: 1800, y: 245}},
-    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 2900, y: 99999}},
-    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 1400, y: 99999}}
+    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 3000, y: 850}, winPos: {x: 2900, y: 99999}},
+    {id: 5, platformsList: level5, startPos: {x: 150, y: 840}, npcPos: {x: 1480, y: 850}, winPos: {x: 1400, y: 99999}},
+    {id: 6 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
 ];
 
 let player = new Player(levels[level].startPos.x, levels[level].startPos.y, 20, 40);
@@ -452,12 +482,12 @@ function updateCamera() {
                 targetY = 240 - (canvas.height / (2 * camera.zoom));
                 break;
             case 4:
-                targetX = 2200 - (canvas.width / (2 * camera.zoom));
-                targetY = 500 - (canvas.height / (2 * camera.zoom));
+                targetX = 2950 - (canvas.width / (2 * camera.zoom));
+                targetY = 860 - (canvas.height / (2 * camera.zoom));
                 break;
             case 5:
-                targetX = 2200 - (canvas.width / (2 * camera.zoom));
-                targetY = 500 - (canvas.height / (2 * camera.zoom));
+                targetX = 1450 - (canvas.width / (2 * camera.zoom));
+                targetY = 860 - (canvas.height / (2 * camera.zoom));
                 break;
             default:
                 targetX = 0 - (canvas.width / (2 * camera.zoom));
@@ -491,10 +521,11 @@ function isTouchingButton(button){
     }
 }
 
-function drawText (txt, x, y, color = "black", px = "30px Arial"){
+function drawText (txt, x, y, color = "black", px = "30px Arial", align = "left"){
     ctx.fillStyle = color;
     ctx.font = px;
     ctx.fillText(txt, x, y);
+    ctx.textAlign = align
 }
 
 const update = (delta) => {
@@ -512,7 +543,7 @@ const update = (delta) => {
 const drawFrame = (delta) => {
     if (level == 0) {
         drawTitleScreen(delta);
-    } else{
+    } else if (level != 6){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = bg;
         ctx.fillRect(0,0, canvas.width, canvas.height);
@@ -539,6 +570,8 @@ const drawFrame = (delta) => {
             drawText("B: Previous Level", window.innerWidth - 250, 210);
             drawText("N: Next Level", window.innerWidth - 250, 250);
         }
+    } else {
+        drawEndScreen();
     }
 }
 
@@ -587,6 +620,12 @@ function drawTitleScreen(delta){
     levelBtn.y = center.y - startButton.height/(2/levelBtnScale) + shrewLogo.height*scale/2;
     startBtn.draw();
     levelBtn.draw();
+}
+
+function drawEndScreen (){
+    ctx.fillStyle = "grey";
+    ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
+    drawText("You win!", center.x, center.y, "black", "bold 60px sans-serif", "center");
 }
 
 function resetPlayer(){
@@ -661,6 +700,7 @@ window.addEventListener("keyup", e => {
 
 
 function nextLevel (){
+    levelEnded = false;
     let l = level + 1;
     if (l>=levels.length) l = levels.length-1
     else loadLevel(l);
