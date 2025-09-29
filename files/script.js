@@ -359,16 +359,16 @@ let level1 = [
     new Platform (880, 120, 150, 20, "red"),
     new Platform (1175, 120, 50, 20, "red"),
     new Platform (1375, 150, 50, 20, "red"),
-    new Platform (1520, 235, 125, 20, "red"),
+    new Platform (1520, 220, 125, 20, "red"),
     new Platform (1775, 275, 75, 20, "red"),
     new Platform (1950, 350, 500, 20, "gold")
 ];
 let level2 = [
     ground,
     new Platform(600, 50, 200, 20, "red"),
-    new Platform (880, 120, 150, 20, "red"),
+    new Platform (880, 100, 150, 20, "red"),
     new Platform (1175, 120, 50, 20, "red"),
-    new Platform (1375, 150, 50, 20, "red"),
+    new Platform (1365, 150, 50, 20, "red"),
     new Platform (1520, 200, 125, 20, "red"),
     new Platform (1775, 245, 75, 20, "red"),
     new Platform (1950, 275, 500, 20, "gold")
@@ -438,8 +438,33 @@ function resizeCanvas() {
 
 function updateCamera() {
     if (levelEnded) {
-        targetX = 2200 - (canvas.width / (2 * camera.zoom));
-        targetY = 500 - (canvas.height / (2 * camera.zoom));
+        switch (level){
+            case 1:
+                targetX = 2200 - (canvas.width / (2 * camera.zoom));
+                targetY = 500 - (canvas.height / (2 * camera.zoom));
+                break;
+            case 2:
+                targetX = 2200 - (canvas.width / (2 * camera.zoom));
+                targetY = 585 - (canvas.height / (2 * camera.zoom));
+                break;
+            case 3:
+                targetX = 1900 - (canvas.width / (2 * camera.zoom));
+                targetY = 240 - (canvas.height / (2 * camera.zoom));
+                break;
+            case 4:
+                targetX = 2200 - (canvas.width / (2 * camera.zoom));
+                targetY = 500 - (canvas.height / (2 * camera.zoom));
+                break;
+            case 5:
+                targetX = 2200 - (canvas.width / (2 * camera.zoom));
+                targetY = 500 - (canvas.height / (2 * camera.zoom));
+                break;
+            default:
+                targetX = 0 - (canvas.width / (2 * camera.zoom));
+                targetY = 0 - (canvas.height / (2 * camera.zoom));
+                break;
+
+        }
     } else {
         targetX = player.x - (canvas.width / (2 * camera.zoom)) + player.width / 2;
         targetY = player.y - (canvas.height / (2 * camera.zoom)) + player.height / 2;
