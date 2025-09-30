@@ -51,7 +51,7 @@ let dialouge = {
         "Okay then, I guess we can just go back home if you will not agree"
     ],
     "level5": [
-        "Kate look here, hast thour beheld a fresher gentelwoman?",
+        "Kate look here, hast thou beheld a fresher gentelwoman?",
         "Such war of white and red within her cheeks!",
         "What stars do spangle heaven with such beauty as those two eyes become that heavenly face?",
         "Fair lovely maid, once more good day to thee. Sweet Kate, embrace her for her beauty’s sake",
@@ -64,7 +64,6 @@ let dialouge = {
     ]
 }
 
-
 resizeCanvas();
 
 let shrewLogo;
@@ -73,7 +72,7 @@ let levelButton;
 let startBtn;
 let levelBtn;
 let katherine;
-let petrucioImg;
+let petruchioImg;
 let vincentio;
 
 
@@ -110,7 +109,7 @@ Promise.all([
     let katherineR0 = images[6];
     let katherineR1 = images[7];
     let katherineRJ = images[8];
-    petrucioImg = images[9];
+    petruchioImg = images[9];
     vincentio = images[10];
     katherine = {left: {0: katherineL0, 1: katherineL1, jump: katherineLJ}, right: {0: katherineR0, 1: katherineR1, jump: katherineRJ}};
     startBtn = new Button(0, 0, startButton, 3);
@@ -233,7 +232,8 @@ class Player {
             }
 
             if (this.x < 0) this.x=0;
-            if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
+            if (level == 4 && this.x <= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
+            else if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
 
             if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
                 this.yVelocity = -this.jumpHeight*jumpMult;
@@ -308,7 +308,7 @@ class NPC {
     }
 
     draw(){
-        ctx.drawImage(petrucioImg, this.x-8, this.y, this.width+16, this.height)
+        ctx.drawImage(petruchioImg, this.x-8, this.y, this.width+16, this.height)
     }
 }
 
@@ -421,6 +421,26 @@ let level3 = [
     new Platform(1750, 620, 300, 10, "gold")
 ];
 let level4 = [
+    ground,
+    new Platform(600, 50, 200, 20, "red"),
+    new Platform(900, 70, 200, 20, "red"),
+    new Platform(1205, 100, 200, 20, "red", true, true),
+    new Platform(1425, 150, 100, 20, "red"),
+    new Platform(1500, 200, 50, 20, "red"),
+    new Platform(1350, 250, 100, 10, "red"),
+    new Platform(1200, 300, 125, 10, "red"),
+    new Platform(975, 360, 150, 10, "red"),
+    new Platform(750, 410, 150, 10, "red", true, true),
+    new Platform(540, 435, 150, 10, "red"),
+    new Platform(350, 450, 150, 10, "red"),
+    new Platform(50, 500, 300, 10, "gold"),
+    new Platform(1200, 420, 150, 10, "red", false, true),
+    new Platform(1420, 475, 50, 10, "red"),
+    new Platform(1570, 525, 25, 10, "red"),
+    new Platform(1630, 575, 25, 10, "red"),
+    new Platform(1750, 620, 300, 10, "gold")
+];
+/*let level4 = [
     ground, 
     new Platform(600, 50, 150, 20, "red"),
     new Platform(800, 75, 100, 20, "red"),
@@ -436,7 +456,7 @@ let level4 = [
     new Platform(2420, 360, 125, 10, "red"),
     new Platform(2600, 360, 125, 10, "red", false, true),
     new Platform(2675, 0, 600, 10, "gold")
-];
+];*/
 let offset = 120;
 let level5 = [
     ground,
@@ -459,7 +479,7 @@ let levels = [
     {id: 1, platformsList: level1, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 500}, winPos: {x: 2100, y: 520}},
     {id: 2, platformsList: level2, startPos: {x: 150, y: 840}, npcPos: {x: 2250, y: 575}, winPos: {x: 2100, y: 595}},
     {id: 3, platformsList: level3, startPos: {x: 150, y: 840}, npcPos: {x: 2000, y: 230}, winPos: {x: 1800, y: 245}},
-    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 3000, y: 850}, winPos: {x: 2900, y: 99999}},
+    {id: 4, platformsList: level4, startPos: {x: 150, y: 840}, npcPos: {x: 105, y: 350}, winPos: {x: 270, y: 360}},
     {id: 5, platformsList: level5, startPos: {x: 600, y: 840}, npcPos: {x: 2200, y: 850}, winPos: {x: 2100, y: 99999}},
     {id: 6 ,platformsList: platforms, startPos: {x: 150, y: 840}, npcPos: {x: 0, y: 0}, winPos: {x: 99999, y: 99999}}
 ];
@@ -489,8 +509,8 @@ function updateCamera() {
                 targetY = 240 - (canvas.height / (2 * camera.zoom));
                 break;
             case 4:
-                targetX = 2950 - (canvas.width / (2 * camera.zoom));
-                targetY = 860 - (canvas.height / (2 * camera.zoom));
+                targetX = 180 - (canvas.width / (2 * camera.zoom));
+                targetY = 360 - (canvas.height / (2 * camera.zoom));
                 break;
             case 5:
                 targetX = 2150 - (canvas.width / (2 * camera.zoom));
@@ -559,6 +579,9 @@ const drawFrame = (delta) => {
         ctx.translate(-camera.x, -camera.y);
         player.draw();
         Pertrucio.draw();
+        if (level == 5){
+            ctx.drawImage(vincentio, 2230, 850, 40, 50);
+        }
         for (let p of levels[level].platformsList) p.draw(delta);
         ctx.restore();
         drawDialogue();
@@ -654,12 +677,32 @@ function startDialogue(levelKey) {
 function drawDialogue() {
     if (!dialogueActive) return;
 
+    let speaker;
+    switch (level){
+        case 3:
+            if (dialogueIndex == 2) speaker = "Katherine"
+            else speaker = "Petruchio"
+            break;
+        case 4:
+            if (dialogueIndex == 1 || dialogueIndex == 3) speaker = "Katherine"
+            else speaker = "Petruchio"
+            break;
+        case 5:
+            if (dialogueIndex == 4 || dialogueIndex == 5 || dialogueIndex == 6 || dialogueIndex == 8 || dialogueIndex == 9) speaker = "Katherine"
+            else speaker = "Petruchio"
+            break;
+        default:
+            speaker = "Petruchio"
+            break;
+    }
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
     ctx.fillRect(50, canvas.height - 150, canvas.width - 100, 100);
 
     ctx.fillStyle = "white";
     ctx.font = "24px Arial";
-    ctx.fillText(currentDialogue[dialogueIndex], 70, canvas.height - 110);
+    ctx.fillText(speaker + ":", 70, canvas.height - 110);
+    ctx.fillText(currentDialogue[dialogueIndex], 70, canvas.height - 80);
 }
 
 
