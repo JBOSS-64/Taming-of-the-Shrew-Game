@@ -724,7 +724,7 @@ function drawEndScreen (){
         ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
         drawText("Thank you for playing!", center.x, center.y- 80, "black", "bold 60px sans-serif", "center");
         drawText("850+ Lines of code", center.x, center.y, "black", "bold 40px sans-serif", "center");
-        drawText("15+ Hours of work", center.x, center.y + 70, "black", "bold 40px sans-serif", "center");
+        drawText("16+ Hours of work", center.x, center.y + 70, "black", "bold 40px sans-serif", "center");
         drawText("Sprites by me, except for the start button", center.x, center.y + 130, "black", "bold 30px sans-serif", "center");
         drawText("which I found from Kaleb da Silva Pereira on Vecteezy", center.x, center.y + 190, "black", "bold 30px sans-serif", "center");
         drawText('Based on "The Taming of the Shrew" by William Shakesphere', center.x, center.y + 230, "black", "bold 20px sans-serif", "center");
@@ -816,6 +816,13 @@ window.addEventListener("keydown", e => {
     if(e.code == "KeyR" && !keys[e.code]) player.reset(levels[level].startPos.x, levels[level].startPos.y)
     if(e.code == "KeyN" && !keys[e.code] && debugMode) nextLevel();
     if(e.code == "KeyB" && !keys[e.code] && debugMode) prevLevel();
+    if (endscreen == 1 && level == 6) endscreen = 2;
+    else if (level == 6){
+        nextLevel();
+        endscreen = 1;
+        deaths = 0;
+        gameTime = 0;
+    }
      if (dialogueActive && e.code === "Space") {
         dialogueIndex++;
         if (dialogueIndex >= currentDialogue.length) {
@@ -832,15 +839,6 @@ window.addEventListener("keydown", e => {
     if(e.code == "KeyF" && !keys[e.code] && debugMode) {
         player.fly = !player.fly
         player.yVelocity = 0;
-    }
-    if(e.code == "Space" && !keys[e.code] && level == 6) {
-        if (endscreen == 1) endscreen = 2;
-        else{
-            nextLevel();
-            endscreen = 1;
-            deaths = 0;
-            gameTime = 0;
-        }
     }
     keys[e.code] = true;
 });
