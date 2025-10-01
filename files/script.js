@@ -75,7 +75,7 @@ let shrewLogo;
 let startButton;
 //let levelButton;
 let startBtn;
-let levelBtn;
+//let levelBtn;
 let katherine;
 let petruchioImg;
 let petruchioFImg;
@@ -110,15 +110,15 @@ Promise.all([
     shrewLogo = images[0];
     startButton = images[1];
 //  levelButton = images[2];
-    let katherineL0 = images[3];
-    let katherineL1 = images[4];
-    let katherineLJ = images[5];
-    let katherineR0 = images[6];
-    let katherineR1 = images[7];
-    let katherineRJ = images[8];
-    petruchioImg = images[9];
-    vincentio = images[10];
-    petruchioFImg = images[11];
+    let katherineL0 = images[2];
+    let katherineL1 = images[3];
+    let katherineLJ = images[4];
+    let katherineR0 = images[5];
+    let katherineR1 = images[6];
+    let katherineRJ = images[7];
+    petruchioImg = images[8];
+    vincentio = images[9];
+    petruchioFImg = images[10];
     katherine = {left: {0: katherineL0, 1: katherineL1, jump: katherineLJ}, right: {0: katherineR0, 1: katherineR1, jump: katherineRJ}};
     startBtn = new Button(0, 0, startButton, 3);
     //levelBtn = new Button(0, 0, levelButton, 3);
@@ -725,7 +725,9 @@ function drawEndScreen (){
         drawText("Thank you for playing!", center.x, center.y- 80, "black", "bold 60px sans-serif", "center");
         drawText("850+ Lines of code", center.x, center.y, "black", "bold 40px sans-serif", "center");
         drawText("15+ Hours of work", center.x, center.y + 70, "black", "bold 40px sans-serif", "center");
-        drawText('Based off of "The Taming of the Shrew" by William Shakesphere', center.x, center.y + 130, "black", "bold 30px sans-serif", "center");
+        drawText("Sprites by me, except for the start button", center.x, center.y + 130, "black", "bold 30px sans-serif", "center");
+        drawText("which I found from Kaleb da Silva Pereira on Vecteezy", center.x, center.y + 190, "black", "bold 30px sans-serif", "center");
+        drawText('Based off of "The Taming of the Shrew" by William Shakesphere', center.x, center.y + 250, "black", "bold 20px sans-serif", "center");
         drawText("Press space to continue", center.x, window.innerHeight-100, "darkgrey", "bold 30px sans-serif", "center");
     }
 }
