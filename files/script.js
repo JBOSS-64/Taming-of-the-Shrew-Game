@@ -822,6 +822,7 @@ window.addEventListener("keydown", e => {
             dialogueActive = false;
             levelEnded = false;
             nextLevel();
+            endscreen = 1
         }
     }
     if(e.code == "KeyL" && !keys[e.code]){
