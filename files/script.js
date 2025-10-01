@@ -835,6 +835,8 @@ window.addEventListener("keydown", e => {
         else{
             nextLevel();
             endscreen = 1;
+            deaths = 0;
+            gameTime = 0;
         }
     }
     keys[e.code] = true;
