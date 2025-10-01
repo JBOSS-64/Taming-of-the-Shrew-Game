@@ -21,6 +21,11 @@ let currentDialogue = null;
 let dialogueIndex = 0;
 let dialogueActive = false;
 let gameWon = false;
+let endscreen = 1;
+let timerStarted = false;
+let gameTime = 0;
+let time1 = 0;
+let time2 = 0;
 
 let dialouge = {
     "level0": [],
@@ -73,6 +78,7 @@ let startBtn;
 let levelBtn;
 let katherine;
 let petruchioImg;
+let petruchioFImg;
 let vincentio;
 
 
@@ -97,7 +103,8 @@ Promise.all([
     loadImage("images/katherine/katherineR1.png"),
     loadImage("images/katherine/katherineRJ.png"),
     loadImage("images/petruchio.png"),
-    loadImage("images/vincentio.png")
+    loadImage("images/vincentio.png"),
+    loadImage("images/petruchioF.png"),
 ]).then(images => {
     console.log("All images loaded.");
     shrewLogo = images[0];
@@ -111,6 +118,7 @@ Promise.all([
     let katherineRJ = images[8];
     petruchioImg = images[9];
     vincentio = images[10];
+    petruchioFImg = images[11];
     katherine = {left: {0: katherineL0, 1: katherineL1, jump: katherineLJ}, right: {0: katherineR0, 1: katherineR1, jump: katherineRJ}};
     startBtn = new Button(0, 0, startButton, 3);
     levelBtn = new Button(0, 0, levelButton, 3);
@@ -156,6 +164,9 @@ class Player {
     }
 
     update(delta) {
+        if (level >= 1 && level < 6) timerStarted = true;
+        else timerStarted = false
+        if (timerStarted) gameTime += delta;
         if (this.fly){
             let dx = 0;
             let dy = 0;
@@ -184,8 +195,8 @@ class Player {
                     jumpMult = .85;
                     break;
                 case 4:
-                    speedMult = .55;
-                    jumpMult = .8;
+                    speedMult = .57;
+                    jumpMult = .85;
                     break;
                 case 5:
                     speedMult = .35;
@@ -233,7 +244,7 @@ class Player {
 
             if (this.x < 0) this.x=0;
             if (level == 4 && this.x <= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
-            else if (this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
+            if (level != 4 && this.x >= levels[level].winPos.x && this.y <= levels[level].winPos.y) levelEnd();
 
             if ((keys["Space"] || keys["ArrowUp"] || keys["KeyW"]) && this.grounded) {
                 this.yVelocity = -this.jumpHeight*jumpMult;
@@ -308,7 +319,8 @@ class NPC {
     }
 
     draw(){
-        ctx.drawImage(petruchioImg, this.x-8, this.y, this.width+16, this.height)
+        let draw = level == 4 ? petruchioFImg : petruchioImg;
+        ctx.drawImage(draw, this.x-8, this.y, this.width+16, this.height)
     }
 }
 
@@ -567,10 +579,54 @@ const update = (delta) => {
     } else deathTimer = 0;
 }
 
+let lastPlatformIndex = -1;
+let alertTimer = 0;
+let alertText = "Moon!";
+let doDrawText = false;
 const drawFrame = (delta) => {
+    alertTimer -= delta;
+    if (alertTimer <= 0) {
+        doDrawText = false;
+        alertTimer = 0;
+    }
+    else doDrawText = true;
     if (level == 0) {
         drawTitleScreen(delta);
     } else if (level != 6){
+        if (level == 4) {
+            if (bg === "darkblue") {
+                time2 -= delta;
+                if (time2 <= 0) {
+                    time2 = 0;
+                    bg = "skyblue";
+                }
+            } else if (bg === "skyblue") {
+                if (time1 === 0) time1 = randomNum(0.1, 5);
+                time1 -= delta;
+                if (time1 <= 0) {
+                    time1 = 0;
+                    bg = "darkblue";
+                    time2 = randomNum(0.5, 1.5);
+                }
+            }
+        }
+        
+        if (level == 5){
+            let currentPlatformIndex = -1;
+            for (let i = 0; i < 11; i++){
+                if(player.x >= 820 + offset * i && player.x < 820 + offset * (i+1)){
+                    currentPlatformIndex = i;
+                    break;
+                }
+            }
+
+            if (currentPlatformIndex !== -1 && currentPlatformIndex !== lastPlatformIndex) {
+                bg = bg == "skyblue" ? "darkblue" : "skyblue";
+                alertText = bg == "skyblue" ? "Sun!" : "Moon!";
+                alertTimer = 1;
+                lastPlatformIndex = currentPlatformIndex;
+            }
+        }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = bg;
         ctx.fillRect(0,0, canvas.width, canvas.height);
@@ -585,14 +641,16 @@ const drawFrame = (delta) => {
         for (let p of levels[level].platformsList) p.draw(delta);
         ctx.restore();
         drawDialogue();
+        if (doDrawText) drawText(alertText, center.x, center.y, "black", "50px Arial", "center");
         if(debugMode){
             drawText("Debug Mode", 50, 50);
             drawText("Player X: " + Math.floor(player.x), 50, 90);
             drawText("Player Y: " + Math.floor(player.y), 50, 130);
             drawText("Y Velocity: " + Math.floor(player.yVelocity), 50, 170);
             drawText("Flying: " + player.fly, 50, 210);
-            drawText("Level: " + level + "/" + (levels.length-1), 50, 250);
+            drawText("Level: " + level + "/" + (levels.length-2), 50, 250);
             drawText("Deaths: " + deaths, 50, 290)
+            drawText("Time: " + Math.floor(gameTime), 50, 330)
             drawText("Controls:", window.innerWidth - 250, 50);
             drawText("L: Toggle Debug", window.innerWidth - 250, 90);
             drawText("F: Toggle Flight", window.innerWidth - 250, 130);
@@ -653,13 +711,24 @@ function drawTitleScreen(delta){
 }
 
 function drawEndScreen (){
-    ctx.fillStyle = "grey";
-    ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
-    drawText("You win!", center.x, center.y, "black", "bold 60px sans-serif", "center");
+    if (endscreen = 1){
+        ctx.fillStyle = "grey";
+        ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
+        drawText("You.... win?", center.x, center.y- 50, "black", "bold 60px sans-serif", "center");
+        drawText("You gave in to Petruchio and stopped your suffering", center.x, center.y+50, "black", "bold 50px sans-serif", "center");
+        drawText("Time: " + Math.floor(gameTime) + " seconds", center.x, center.y+100, "black", "bold 30px sans-serif", "center");
+        drawText("Deaths: " + deaths, center.x, center.y+150, "black", "bold 30px sans-serif", "center");
+        drawText("Press space to continue", center.x, window.innerHeight-100, "darkgrey", "bold 30px sans-serif", "center");
+    } else {
+        ctx.fillStyle = "grey";
+        ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
+        drawText("Press space to continue", center.x, window.innerHeight-100, "darkgrey", "bold 30px sans-serif", "center");
+    }
 }
 
 function resetPlayer(){
     player.reset(levels[level].startPos.x, levels[level].startPos.y);
+    bg = "skyblue";
 }
 
 function levelEnd(){
@@ -697,14 +766,30 @@ function drawDialogue() {
     }
 
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
-    ctx.fillRect(50, canvas.height - 150, canvas.width - 100, 100);
+    ctx.fillRect(50, canvas.height - 150, canvas.width - 100, 110);
 
     ctx.fillStyle = "white";
     ctx.font = "24px Arial";
     ctx.fillText(speaker + ":", 70, canvas.height - 110);
-    ctx.fillText(currentDialogue[dialogueIndex], 70, canvas.height - 80);
+    wrapText(ctx, currentDialogue[dialogueIndex], 70, canvas.height - 80, canvas.width - 140, 28);
 }
 
+function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(" ");
+    let line = "";
+    for (let i = 0; i < words.length; i++) {
+        const testLine = line + words[i] + " ";
+        const testWidth = ctx.measureText(testLine).width;
+        if (testWidth > maxWidth && i > 0) {
+            ctx.fillText(line, x, y);
+            line = words[i] + " ";
+            y += lineHeight;
+        } else {
+            line = testLine;
+        }
+    }
+    ctx.fillText(line, x, y);
+}
 
 
 canvas.addEventListener('mousemove', (e) => {
@@ -741,6 +826,10 @@ window.addEventListener("keydown", e => {
         player.fly = !player.fly
         player.yVelocity = 0;
     }
+    if(e.code == "Space" && !keys[e.code] && level == 6) {
+        if (endscreen == 1) endscreen = 2;
+        else nextLevel();
+    }
     keys[e.code] = true;
 });
 
@@ -750,9 +839,12 @@ window.addEventListener("keyup", e => {
 
 
 function nextLevel (){
+    bg = "skyblue"
     levelEnded = false;
     let l = level + 1;
-    if (l>=levels.length) l = levels.length-1
+    if (l>=levels.length){
+        loadLevel(0)
+    }
     else loadLevel(l);
 }
 
@@ -763,7 +855,7 @@ function prevLevel (){
 }
 
 function startGame(){
-    lastTime = 0;
+    lastTime = performance.now();
     requestAnimationFrame(gameLoop);
 }
 
