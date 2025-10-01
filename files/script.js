@@ -73,7 +73,7 @@ resizeCanvas();
 
 let shrewLogo;
 let startButton;
-let levelButton;
+//let levelButton;
 let startBtn;
 let levelBtn;
 let katherine;
@@ -95,7 +95,7 @@ function loadImage(src) {
 Promise.all([
     loadImage("images/shrewLogo.png"),
     loadImage("images/startButton.png"),
-    loadImage("images/levelButton.png"),
+//  loadImage("images/levelButton.png"),
     loadImage("images/katherine/katherineL0.png"),
     loadImage("images/katherine/katherineL1.png"),
     loadImage("images/katherine/katherineLJ.png"),
@@ -109,7 +109,7 @@ Promise.all([
     console.log("All images loaded.");
     shrewLogo = images[0];
     startButton = images[1];
-    levelButton = images[2];
+//  levelButton = images[2];
     let katherineL0 = images[3];
     let katherineL1 = images[4];
     let katherineLJ = images[5];
@@ -121,7 +121,7 @@ Promise.all([
     petruchioFImg = images[11];
     katherine = {left: {0: katherineL0, 1: katherineL1, jump: katherineLJ}, right: {0: katherineR0, 1: katherineR1, jump: katherineRJ}};
     startBtn = new Button(0, 0, startButton, 3);
-    levelBtn = new Button(0, 0, levelButton, 3);
+    //levelBtn = new Button(0, 0, levelButton, 3);
     startGame();
 }).catch(err => {
     console.error(err);
@@ -681,33 +681,33 @@ function drawTitleScreen(delta){
     ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
     let scale = 0.6;
     let startBtnScale;
-    let levelBtnScale;
+    //let levelBtnScale;
     if(isTouchingButton(startBtn)) {
         startBtnScale = 5.5;
     }
     else {
         startBtnScale = 5;
     }
-    if(isTouchingButton(levelBtn)) {
+    /*if(isTouchingButton(levelBtn)) {
         levelBtnScale = 5.5;
     }
     else {
         levelBtnScale = 5;
-    }
+    }*/
     startBtn.scaleBtn(startBtnScale);
-    levelBtn.scaleBtn(levelBtnScale);
+    //levelBtn.scaleBtn(levelBtnScale);
     const amplitude = 10;
     const offsetY = (center.y-shrewLogo.height/(2/scale))-(window.innerHeight/6);
     const y = offsetY + Math.sin(t) * amplitude;
     ctx.drawImage(shrewLogo, center.x-shrewLogo.width/(2/scale), y, shrewLogo.width*scale, shrewLogo.height*scale)
 
-    startBtn.x = (center.x - startButton.width/(2/startBtnScale)) - window.innerWidth/4
+    startBtn.x = (center.x - startButton.width/(2/startBtnScale))
     startBtn.y = center.y - startButton.height/(2/startBtnScale) + shrewLogo.height*scale/2;
 
-    levelBtn.x = (levelBtn.x = center.x - startButton.width/(2/levelBtnScale)) + window.innerWidth/4
-    levelBtn.y = center.y - startButton.height/(2/levelBtnScale) + shrewLogo.height*scale/2;
+   // levelBtn.x = (levelBtn.x = center.x - startButton.width/(2/levelBtnScale)) + window.innerWidth/4
+   // levelBtn.y = center.y - startButton.height/(2/levelBtnScale) + shrewLogo.height*scale/2;
     startBtn.draw();
-    levelBtn.draw();
+    //levelBtn.draw();
 }
 
 function drawEndScreen (){
@@ -805,9 +805,9 @@ canvas.addEventListener('mousedown', () =>{
     if(isTouchingButton(startBtn)){
         loadLevel(1);
     }
-    if(isTouchingButton(levelBtn)){
+    /*if(isTouchingButton(levelBtn)){
         screen = "level"
-    }
+    }*/
 });
 
 window.addEventListener("keydown", e => {
