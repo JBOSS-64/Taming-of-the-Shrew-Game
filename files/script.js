@@ -711,7 +711,7 @@ function drawTitleScreen(delta){
 }
 
 function drawEndScreen (){
-    if (endscreen = 1){
+    if (endscreen == 1){
         ctx.fillStyle = "grey";
         ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
         drawText("You.... win?", center.x, center.y- 50, "black", "bold 60px sans-serif", "center");
@@ -722,6 +722,10 @@ function drawEndScreen (){
     } else {
         ctx.fillStyle = "grey";
         ctx.fillRect(0,0, window.innerWidth, window.innerHeight);
+        drawText("Thank you for playing!", center.x, center.y- 80, "black", "bold 60px sans-serif", "center");
+        drawText("850+ Lines of code", center.x, center.y, "black", "bold 40px sans-serif", "center");
+        drawText("15+ Hours of work", center.x, center.y + 70, "black", "bold 40px sans-serif", "center");
+        drawText('Based off of "The Taming of the Shrew" by William Shakesphere', center.x, center.y + 130, "black", "bold 30px sans-serif", "center");
         drawText("Press space to continue", center.x, window.innerHeight-100, "darkgrey", "bold 30px sans-serif", "center");
     }
 }
@@ -828,7 +832,10 @@ window.addEventListener("keydown", e => {
     }
     if(e.code == "Space" && !keys[e.code] && level == 6) {
         if (endscreen == 1) endscreen = 2;
-        else nextLevel();
+        else{
+            nextLevel();
+            endscreen = 1;
+        }
     }
     keys[e.code] = true;
 });
